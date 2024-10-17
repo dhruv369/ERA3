@@ -1,0 +1,23 @@
+{
+  "manifest_version": 3,
+  "name": "Swedish Translator",
+  "version": "1.0",
+  "description": "Translate selected words to Swedish and provide English definitions",
+  "permissions": ["activeTab", "contextMenus", "storage"],
+  "host_permissions": [
+    "https://api.mymemory.translated.net/*",
+    "https://api.dictionaryapi.dev/*"
+  ],
+  "action": {
+    "default_popup": "popup.html"
+  },
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content.js"]
+    }
+  ]
+}
