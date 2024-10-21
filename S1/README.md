@@ -1,3 +1,4 @@
+# Session 1 : Readme File
 # Chrome Extension - Word Translator (English to Swedish)
 
 This project is a simple Chrome extension that translates words from English to Swedish. It's created using the **Cursor New AI Tool** as part of an experiment to familiarize myself with AI-assisted development. 
@@ -31,5 +32,5 @@ This project is a simple Chrome extension that translates words from English to 
 
 ## Demo & Resources
 
-- [YouTube Tutorial](#)
+- [YouTube Tutorial](https://youtu.be/eGQqz-pdGX0)
 - [LinkedIn Post](#)
