@@ -1,13 +1,10 @@
 from flask import Flask, request, jsonify, send_from_directory
 from flask_cors import CORS
-from model import predict_digit
+from inference import predict_digit
 import base64
-import numpy as np
 from PIL import Image
 import io
-import torch
 import torchvision.transforms as transforms
-import os
 
 app = Flask(__name__, static_folder='static')
 CORS(app)
@@ -28,7 +25,7 @@ def identify():
         transforms.Normalize((0.5,), (0.5,))
     ])
     
-    image_tensor = transform(image).unsqueeze(0)
+    image_tensor = transform(image)
     
     predicted_digit = predict_digit(image_tensor)
     return jsonify({'digit': str(predicted_digit)})
