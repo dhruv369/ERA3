@@ -67,3 +67,45 @@ clearButton.addEventListener('click', clearCanvas);
 identifyButton.addEventListener('click', identifyDigit);
 
 clearCanvas();
+
+document.getElementById('showAnimal').addEventListener('click', function() {
+    const selectedAnimal = document.querySelector('input[name="animal"]:checked');
+    if (selectedAnimal) {
+        fetch('/get_animal', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: `animal=${selectedAnimal.value}`
+        })
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById('animalImage').innerHTML = `<img src="${data.image}" alt="${selectedAnimal.value}">`;
+        });
+    }
+});
+
+document.getElementById('uploadFile').addEventListener('click', function() {
+    const fileInput = document.getElementById('fileInput');
+    const file = fileInput.files[0];
+    if (file) {
+        const formData = new FormData();
+        formData.append('file', file);
+        fetch('/upload', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.error) {
+                document.getElementById('fileInfo').textContent = data.error;
+            } else {
+                document.getElementById('fileInfo').innerHTML = `
+                    <p>Name: ${data.name}</p>
+                    <p>Size: ${data.size}</p>
+                    <p>Type: ${data.type}</p>
+                `;
+            }
+        });
+    }
+});

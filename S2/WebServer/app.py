@@ -1,38 +1,41 @@
-from flask import Flask, request, jsonify, send_from_directory
-from flask_cors import CORS
-from inference import predict_digit
-import base64
-from PIL import Image
-import io
-import torchvision.transforms as transforms
+from flask import Flask, render_template, request, jsonify
+import os
 
-app = Flask(__name__, static_folder='static')
-CORS(app)
+app = Flask(__name__)
+
+UPLOAD_FOLDER = 'uploads'
+if not os.path.exists(UPLOAD_FOLDER):
+    os.makedirs(UPLOAD_FOLDER)
+
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 @app.route('/')
 def index():
-    return send_from_directory('.', 'index.html')
+    return render_template('index.html')
 
-@app.route('/identify', methods=['POST'])
-def identify():
-    data = request.json
-    image_data = data['image'].split(',')[1]
-    image = Image.open(io.BytesIO(base64.b64decode(image_data)))
-    image = image.convert('L').resize((28, 28))
-    
-    transform = transforms.Compose([
-        transforms.ToTensor(),
-        transforms.Normalize((0.5,), (0.5,))
-    ])
-    
-    image_tensor = transform(image)
-    
-    predicted_digit = predict_digit(image_tensor)
-    return jsonify({'digit': str(predicted_digit)})
+@app.route('/get_animal', methods=['POST'])
+def get_animal():
+    animal = request.form['animal']
+    return jsonify({'image': f'/static/images/{animal}.jpg'})
 
-@app.route('/static/<path:path>')
-def serve_static(path):
-    return send_from_directory('static', path)
+@app.route('/upload', methods=['POST'])
+def upload_file():
+    if 'file' not in request.files:
+        return jsonify({'error': 'No file part'})
+    file = request.files['file']
+    if file.filename == '':
+        return jsonify({'error': 'No selected file'})
+    if file:
+        filename = file.filename
+        file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+        file.save(file_path)
+        file_size = os.path.getsize(file_path)
+        file_type = file.content_type
+        return jsonify({
+            'name': filename,
+            'size': f'{file_size} bytes',
+            'type': file_type
+        })
 
 if __name__ == '__main__':
     app.run(debug=True)
