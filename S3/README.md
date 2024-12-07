@@ -1,4 +1,4 @@
-# Session 2 : Readme File
+# Session 3 : Readme File
 
 # Assignment: Multi-Modal Preprocessing & Augmentation App
 
