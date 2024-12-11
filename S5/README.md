@@ -1,83 +1,120 @@
 # Session 5 : Readme File
 
-# MNIST Model with Efficient Parameters
+# MNIST Model with Constraints
 
-This repository contains an efficient implementation of a neural network for the MNIST dataset. The model is designed to meet the following requirements:
+This repository contains an implementation of a lightweight MNIST-based neural network model designed to meet specific requirements. The model and associated code ensure efficient training and robust performance.
 
-## Model Characteristics
-- **Less than 25,000 parameters**
-- **Achieves 95% or higher training accuracy in 1 epoch**
+## Objectives
 
-## Repository Structure
-```
-.
-├── data                # Scripts for data loading and preprocessing
-├── model               # Model definition and architecture
-├── tests               # Test scripts for GitHub Actions
-├── results             # Results, screenshots, and logs
-├── images              # Augmented image samples (for Advanced section)
-├── .github/workflows   # GitHub Actions configuration files
-├── README.md           # Project documentation
-└── requirements.txt    # Required dependencies
-```
+1. **Model Characteristics**:
+   - Less than **25,000 parameters**.
+   - Achieves **95%+ training accuracy in 1 epoch**.
 
-## How to Use
+2. **GitHub Actions Testing**:
+   - Verify the model has less than 25,000 parameters.
+   - Confirm training accuracy of 95% or more in 1 epoch.
 
-### Setup
+3. **Advanced Features**:
+   - Add image augmentation and demonstrate augmented samples.
+   - Include additional tests with GitHub Actions.
+
+---
+
+## Features
+
+### Base Tasks
+- **Model Implementation**:
+  - A lightweight neural network with fewer than 25,000 parameters.
+  - Achieves 95%+ accuracy on the MNIST dataset within 1 epoch.
+
+- **GitHub Actions**:
+  - Automated tests to validate model characteristics.
+  - Includes:
+    - Parameter count check.
+    - Accuracy validation in one epoch.
+
+- **Artifacts**:
+  - Screenshots of successful tests.
+  - Links to GitHub Actions and README.md.
+
+### Advanced Tasks
+- **Image Augmentation**:
+  - Applied augmentation techniques (rotation, flipping, scaling, etc.).
+  - Screenshots showcasing augmented images.
+
+- **Additional Tests**:
+  - Three custom tests for advanced validation.
+
+- **Build Badge**:
+  - "Build Pass" badge added to this README file.
+
+---
+
+## Setup and Usage
+
+### Prerequisites
+- Python 3.8+
+- Virtual environment (recommended)
+- Libraries: TensorFlow, NumPy, Matplotlib, GitHub CLI
+
+### Installation
 1. Clone the repository:
    ```bash
    git clone https://github.com/dhruv369/ERA3.git
-   cd S5
+   cd ERA3/S4
    ```
 2. Install dependencies:
    ```bash
    pip install -r requirements.txt
    ```
 
-### Run Training
-1. Train the model:
+3. Run the training script:
    ```bash
-   python model/train.py
-   ```
-2. View augmented image samples (Advanced):
-   ```bash
-   python data/augment_samples.py
+   python train.py
    ```
 
-### Run Tests
-1. Ensure GitHub Actions are properly set up by committing your code.
-2. To run tests locally:
-   ```bash
-   pytest tests/
-   ```
+### Testing with GitHub Actions
+1. Push your changes to GitHub.
+2. GitHub Actions will automatically:
+   - Check parameter count.
+   - Validate training accuracy.
+3. View results under the **Actions** tab on your GitHub repository.
 
-## GitHub Actions Workflow
-The following tests are executed automatically via GitHub Actions:
-
-### Base Tests
-- **Parameter count**: Ensures the model has fewer than 25,000 parameters.
-- **Training accuracy**: Confirms the model achieves 95% or higher accuracy within 1 epoch.
-
-### Advanced Tests
-- **Image augmentation**: Generates and validates augmented image samples.
-- **Custom tests**:
-  1. Overfitting test: Ensures the model can overfit on a small dataset.
-  2. Inference speed test: Confirms inference time is within acceptable limits.
-  3. Model saving/loading: Validates the model can be saved and loaded without accuracy loss.
+---
 
 ## Results
-- **Screenshot of GitHub Actions passing tests**: [View here](results/github_actions_screenshot.png)
-- **Link to GitHub Actions**: [GitHub Actions](https://github.com/dhruv369/ERA3/actions)
 
-## Advanced Features
-- **Image Augmentation**: Samples of augmented images are available in the `images/` directory.
-- **Build Pass Badge**: ![Build Status](https://github.com/dhruv369/ERA3/actions/workflows/main.yml/badge.svg)
+### Base
+- **GitHub Actions Tests**:
+  - ![Screenshot of Successful Tests](./screenshots/successful_tests.png)
+- **Links**:
+  - [GitHub Actions Results](https://github.com/dhruv369/ERA3/actions)
+  - [README.md](https://github.com/dhruv369/ERA3/blob/main/S4/README.md)
 
-## Contribution
-Contributions are welcome! Please open an issue or submit a pull request for review.
+### Advanced
+- **Augmented Samples**:
+  - ![Augmented Image Samples](./screenshots/augmented_samples.png)
+- **Additional Tests**:
+  - Python code included in `tests/` directory.
+
+- **Build Badge**:
+  - ![Build Pass](https://img.shields.io/github/actions/workflow/status/dhruv369/ERA3/build.yml)
+
+---
+
+## File Structure
+- `train.py` - Script for training the MNIST model.
+- `test_model.py` - Automated tests for GitHub Actions.
+- `requirements.txt` - Dependencies for the project.
+- `README.md` - Project documentation.
+- `screenshots/` - Folder for test and result screenshots.
+
+---
+
+## Contributing
+Feel free to fork this repository and submit a pull request. Contributions are welcome!
+
+---
 
 ## License
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## Author
-[Your Name](https://github.com/dhruv369)
+This project is licensed under the MIT License. See `LICENSE` for details.
