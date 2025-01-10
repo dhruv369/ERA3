@@ -1,37 +1,137 @@
-import gradio as gr
+import streamlit as st
 from tokenizers import Tokenizer
 import json
+import os
 
-# Load the tokenizer
-tokenizer = Tokenizer.from_file("bpe_tokenizer.json")
+# Page configuration
+st.set_page_config(
+    page_title="Hindi BPE Tokenizer",
+    page_icon="🇮🇳",
+    layout="wide"
+)
+
+# Add custom CSS
+st.markdown("""
+    <style>
+    .stApp {
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+    .output-container {
+        background-color: #f0f2f6;
+        padding: 20px;
+        border-radius: 10px;
+        margin: 10px 0;
+    }
+    </style>
+""", unsafe_allow_html=True)
+
+# Initialize tokenizer with error handling
+@st.cache_resource
+def load_tokenizer():
+    try:
+        tokenizer = Tokenizer.from_file("bpe_tokenizer.json")
+    except Exception as e:
+        st.warning(f"Error loading tokenizer: {e}")
+        # Initialize a basic BPE tokenizer if file not found
+        from tokenizers import Tokenizer, models, pre_tokenizers, decoders
+        tokenizer = Tokenizer(models.BPE())
+        tokenizer.pre_tokenizer = pre_tokenizers.ByteLevel(add_prefix_space=True)
+        tokenizer.decoder = decoders.ByteLevel()
+    return tokenizer
+
+tokenizer = load_tokenizer()
 
 def tokenize_text(text):
     """Tokenize input text and return tokens with statistics"""
-    encoding = tokenizer.encode(text)
-    tokens = encoding.tokens
-    
-    # Calculate statistics
-    original_length = len(text)
-    tokenized_length = len(tokens)
-    compression_ratio = original_length / tokenized_length
-    
-    # Format output
-    result = f"Tokens: {tokens}\n\n"
-    result += f"Statistics:\n"
-    result += f"Original Length: {original_length}\n"
-    result += f"Number of Tokens: {tokenized_length}\n"
-    result += f"Compression Ratio: {compression_ratio:.2f}"
-    
-    return result
+    try:
+        encoding = tokenizer.encode(text)
+        tokens = encoding.tokens
+        
+        # Calculate statistics
+        original_length = len(text)
+        tokenized_length = len(tokens)
+        compression_ratio = original_length / tokenized_length if tokenized_length > 0 else 0
+        
+        return {
+            "tokens": tokens,
+            "original_length": original_length,
+            "tokenized_length": tokenized_length,
+            "compression_ratio": compression_ratio
+        }
+    except Exception as e:
+        return None
 
-# Create Gradio interface
-iface = gr.Interface(
-    fn=tokenize_text,
-    inputs=gr.Textbox(lines=5, placeholder="Enter Hindi text here..."),
-    outputs=gr.Textbox(lines=8),
-    title="Hindi BPE Tokenizer",
-    description="This tokenizer implements Byte Pair Encoding for Hindi text with a vocabulary size < 5000 tokens."
-)
+# Title and description
+st.title("Hindi BPE Tokenizer")
+st.markdown("""
+This tokenizer implements Byte Pair Encoding for Hindi text with a vocabulary size < 5000 tokens.
 
-if __name__ == "__main__":
-    iface.launch() 
+### Features:
+- Vocabulary size: < 5000 tokens
+- Compression ratio: > 3.2
+- Supports Hindi text
+""")
+
+# Example texts
+example_texts = [
+    "नमस्ते भारत! यह एक उदाहरण पाठ है।",
+    "मैं आज बहुत खुश हूं क्योंकि मौसम बहुत अच्छा है।",
+    "हमारी भारतीय संस्कृति बहुत समृद्ध है।"
+]
+
+# Create two columns
+col1, col2 = st.columns([2, 1])
+
+with col1:
+    # Text input
+    text_input = st.text_area(
+        "Enter Hindi text here",
+        height=150,
+        key="input_text"
+    )
+
+with col2:
+    # Example selector
+    st.subheader("Try an example")
+    for i, example in enumerate(example_texts):
+        if st.button(f"Example {i+1}", key=f"example_{i}"):
+            text_input = example
+            st.session_state.input_text = example
+
+# Process text when input is available
+if text_input:
+    result = tokenize_text(text_input)
+    
+    if result:
+        # Display results in an organized way
+        st.markdown("### Results")
+        
+        # Display tokens
+        st.markdown("#### Tokens")
+        st.markdown('<div class="output-container">', unsafe_allow_html=True)
+        st.write(result["tokens"])
+        st.markdown('</div>', unsafe_allow_html=True)
+        
+        # Display statistics
+        st.markdown("#### Statistics")
+        col1, col2, col3 = st.columns(3)
+        
+        with col1:
+            st.metric("Original Length", result["original_length"])
+        
+        with col2:
+            st.metric("Number of Tokens", result["tokenized_length"])
+        
+        with col3:
+            st.metric("Compression Ratio", f"{result['compression_ratio']:.2f}")
+    else:
+        st.error("Error processing text. Please try again with different input.")
+
+# Footer
+st.markdown("---")
+st.markdown("""
+### About
+This tokenizer uses the `tokenizers` library to implement BPE encoding specifically for Hindi text.
+For more information, visit our [GitHub Repository](https://github.com/dhruv369/ERA3/tree/main/S11).
+""") 
