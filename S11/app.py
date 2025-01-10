@@ -92,24 +92,29 @@ example_texts = [
     "हमारी भारतीय संस्कृति बहुत समृद्ध है।"
 ]
 
+# Initialize session state for selected example
+if 'selected_example' not in st.session_state:
+    st.session_state.selected_example = None
+
 # Create two columns
 col1, col2 = st.columns([2, 1])
-
-with col1:
-    # Text input
-    text_input = st.text_area(
-        "Enter Hindi text here",
-        height=150,
-        key="input_text"
-    )
 
 with col2:
     # Example selector
     st.subheader("Try an example")
     for i, example in enumerate(example_texts):
         if st.button(f"Example {i+1}", key=f"example_{i}"):
-            text_input = example
-            st.session_state.input_text = example
+            st.session_state.selected_example = example
+
+with col1:
+    # Text input
+    default_text = st.session_state.selected_example if st.session_state.selected_example else ""
+    text_input = st.text_area(
+        "Enter Hindi text here",
+        value=default_text,
+        height=150,
+        key="input_text"
+    )
 
 # Process text when input is available
 if text_input:
