@@ -41,3 +41,15 @@ This space provides a Byte Pair Encoding (BPE) tokenizer specifically trained fo
 
 The complete source code is available at: [GitHub Repository](https://github.com/dhruv369/ERA3/tree/main/S11)
 
+## Repository Structure
+
+```
+S11/
+├── train_tokenizer.py       # Script to train the tokenizer
+├── app.py                   # Streamlit web interface
+├── example_data.txt         # Sample text data for training
+├── requirements.txt         # Python dependencies
+├── .gitignore              # Git ignore configuration
+└── README.md               # Documentation
+```
+
