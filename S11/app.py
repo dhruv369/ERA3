@@ -1,5 +1,5 @@
 import streamlit as st
-from tokenizers import Tokenizer
+from tokenizers import Tokenizer, models, pre_tokenizers, decoders
 import json
 import os
 
@@ -30,20 +30,27 @@ st.markdown("""
 @st.cache_resource
 def load_tokenizer():
     try:
-        tokenizer = Tokenizer.from_file("bpe_tokenizer.json")
+        if os.path.exists("bpe_tokenizer.json"):
+            return Tokenizer.from_file("bpe_tokenizer.json")
+        else:
+            st.warning("Tokenizer file not found. Please run train_tokenizer.py first.")
+            # Create a basic tokenizer as fallback
+            tokenizer = Tokenizer(models.BPE())
+            tokenizer.pre_tokenizer = pre_tokenizers.ByteLevel(add_prefix_space=True)
+            tokenizer.decoder = decoders.ByteLevel()
+            return tokenizer
     except Exception as e:
-        st.warning(f"Error loading tokenizer: {e}")
-        # Initialize a basic BPE tokenizer if file not found
-        from tokenizers import Tokenizer, models, pre_tokenizers, decoders
-        tokenizer = Tokenizer(models.BPE())
-        tokenizer.pre_tokenizer = pre_tokenizers.ByteLevel(add_prefix_space=True)
-        tokenizer.decoder = decoders.ByteLevel()
-    return tokenizer
+        st.error(f"Error initializing tokenizer: {str(e)}")
+        return None
 
+# Load the tokenizer
 tokenizer = load_tokenizer()
 
 def tokenize_text(text):
     """Tokenize input text and return tokens with statistics"""
+    if tokenizer is None:
+        return None
+        
     try:
         encoding = tokenizer.encode(text)
         tokens = encoding.tokens
@@ -60,6 +67,7 @@ def tokenize_text(text):
             "compression_ratio": compression_ratio
         }
     except Exception as e:
+        st.error(f"Error processing text: {str(e)}")
         return None
 
 # Title and description
@@ -72,6 +80,10 @@ This tokenizer implements Byte Pair Encoding for Hindi text with a vocabulary si
 - Compression ratio: > 3.2
 - Supports Hindi text
 """)
+
+if tokenizer is None:
+    st.error("Tokenizer is not properly initialized. Please make sure to run train_tokenizer.py first.")
+    st.stop()
 
 # Example texts
 example_texts = [
@@ -125,8 +137,6 @@ if text_input:
         
         with col3:
             st.metric("Compression Ratio", f"{result['compression_ratio']:.2f}")
-    else:
-        st.error("Error processing text. Please try again with different input.")
 
 # Footer
 st.markdown("---")
