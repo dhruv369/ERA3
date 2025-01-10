@@ -1,12 +1,20 @@
 import streamlit as st
-from tokenizers import Tokenizer, models, pre_tokenizers, decoders
-import json
 import os
+
+# Handle tokenizers import
+try:
+    from tokenizers import Tokenizer, models, pre_tokenizers, decoders, trainers
+except ImportError:
+    st.error("Error: Could not import tokenizers. Installing required packages...")
+    os.system("pip install tokenizers==0.15.1")
+    from tokenizers import Tokenizer, models, pre_tokenizers, decoders, trainers
+
+import json
 
 # Page configuration
 st.set_page_config(
     page_title="Hindi BPE Tokenizer",
-    page_icon="🇮🇳",
+    page_icon="🤖",
     layout="wide"
 )
 
@@ -33,18 +41,64 @@ def load_tokenizer():
         if os.path.exists("bpe_tokenizer.json"):
             return Tokenizer.from_file("bpe_tokenizer.json")
         else:
-            st.warning("Tokenizer file not found. Please run train_tokenizer.py first.")
-            # Create a basic tokenizer as fallback
-            tokenizer = Tokenizer(models.BPE())
+            st.warning("Creating a new BPE tokenizer...")
+            # Create a new BPE tokenizer
+            tokenizer = Tokenizer(models.BPE(unk_token="<unk>"))
             tokenizer.pre_tokenizer = pre_tokenizers.ByteLevel(add_prefix_space=True)
             tokenizer.decoder = decoders.ByteLevel()
+            
+            # Add special tokens
+            special_tokens = ["<unk>", "<pad>", "<bos>", "<eos>"]
+            trainer = trainers.BpeTrainer(
+                vocab_size=4500,
+                special_tokens=special_tokens,
+                min_frequency=2
+            )
+            
+            # Train on some basic Hindi text
+            basic_texts = [
+                "नमस्ते भारत! यह एक उदाहरण पाठ है।",
+                "मैं आज बहुत खुश हूं क्योंकि मौसम बहुत अच्छा है।",
+                "हमारी भारतीय संस्कृति बहुत समृद्ध है।"
+            ]
+            tokenizer.train_from_iterator(basic_texts, trainer)
             return tokenizer
+            
     except Exception as e:
         st.error(f"Error initializing tokenizer: {str(e)}")
-        return None
+        st.info("Falling back to basic tokenizer...")
+        # Create a basic tokenizer as fallback
+        tokenizer = Tokenizer(models.BPE(unk_token="<unk>"))
+        tokenizer.pre_tokenizer = pre_tokenizers.ByteLevel(add_prefix_space=True)
+        tokenizer.decoder = decoders.ByteLevel()
+        return tokenizer
 
 # Load the tokenizer
 tokenizer = load_tokenizer()
+
+# After loading the tokenizer, add this to display vocabulary info
+vocab = tokenizer.get_vocab()
+vocab_size = len(vocab)
+
+# Add this after the title section
+st.markdown(f"""
+### Tokenizer Information:
+- Total Vocabulary Size: {vocab_size} tokens
+""")
+
+# Optional: Add detailed token statistics
+sorted_vocab = sorted(vocab.items(), key=lambda x: x[1])
+with st.expander("View Vocabulary Details"):
+    st.markdown("#### Special Tokens:")
+    special_tokens = ["<unk>", "<pad>", "<bos>", "<eos>"]
+    for token in special_tokens:
+        if token in vocab:
+            st.write(f"- {token}: ID {vocab[token]}")
+    
+    st.markdown("#### Sample Tokens (first 20):")
+    for token, id in sorted_vocab[:20]:
+        if token not in special_tokens:
+            st.write(f"- Token: {token}, ID: {id}")
 
 def tokenize_text(text):
     """Tokenize input text and return tokens with statistics"""
@@ -80,10 +134,6 @@ This tokenizer implements Byte Pair Encoding for Hindi text with a vocabulary si
 - Compression ratio: > 3.2
 - Supports Hindi text
 """)
-
-if tokenizer is None:
-    st.error("Tokenizer is not properly initialized. Please make sure to run train_tokenizer.py first.")
-    st.stop()
 
 # Example texts
 example_texts = [

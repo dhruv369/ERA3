@@ -1,6 +1,6 @@
 ---
 title: BPE Tokenizer for Hindi Language
-emoji: 🇮🇳
+emoji: 🇮
 colorFrom: blue
 colorTo: red
 sdk: streamlit
