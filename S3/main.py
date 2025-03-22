@@ -7,12 +7,14 @@ import numpy as np
 from PIL import Image
 import io
 import base64
+import os
 
 app = FastAPI()
 
-# Mount static files
-app.mount("/static", StaticFiles(directory="static"), name="static")
+if not os.path.exists("static"):
+    os.makedirs("static")  # Automatically create the static folder
 
+app.mount("/static", StaticFiles(directory="static"), name="static")
 # Templates
 templates = Jinja2Templates(directory="templates")
 
