@@ -42,17 +42,15 @@ python app.py
 ```
 
 ## Styles Used
-1. [Style 1 - TBD]
-2. [Style 2 - TBD]
-3. [Style 3 - TBD]
-4. [Style 4 - TBD]
-5. [Style 5 - TBD]
+1. [Style 1 - Analog Film]
+2. [Style 2 - Watercolor]
+3. [Style 3 - Cyberpunk Anime]
+4. [Style 4 - Arcane Style]
+5. [Style 5 - Midjourney Style]
 
 ## Custom Loss Function
 Implementation of a custom loss function for image processing.
 
 ## Links
-- [Hugging Face Space](TBD)
-- [LinkedIn Post](TBD)
+- [Hugging Face Space](https://huggingface.co/spaces/Dhruv3690/Stable_Diffusion)
 
-Check out the configuration reference at https://huggingface.co/docs/hub/spaces-config-reference
